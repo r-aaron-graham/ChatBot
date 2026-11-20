@@ -10,11 +10,14 @@ FAQ = [
 ]
 
 
+STOP_WORDS = {"a", "an", "the", "is", "are", "how", "what", "to", "and", "this", "of", "do", "i"}
+
+
 def answer(question):
-    tokens = set(re.findall(r"[a-z0-9]+", question.lower()))
+    tokens = set(re.findall(r"[a-z0-9]+", question.lower())) - STOP_WORDS
     scores = [len(tokens & set(re.findall(r"[a-z0-9]+", entry["text"].lower()))) for entry in FAQ]
     best = max(scores)
-    if best == 0:
+    if best == 0 or scores.count(best) > 1:
         return {"answer": "No matching FAQ entry found.", "source": None}
     entry = FAQ[scores.index(best)]
     return {"answer": entry["text"], "source": entry["id"]}
